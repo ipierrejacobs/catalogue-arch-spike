@@ -1,3 +1,12 @@
+**PHASE 2 ARCHITECTURE SPIKE — scope note (read first).**
+This repo is the Phase 2 Component-Architecture spike, NOT a bake-off sibling.
+There is no sibling repo and no fair fight. The following still apply, unchanged:
+§1.3 human checkpoints · §1.4 sandbox discipline · §2 environment & commands ·
+§5 state-placement law. The following DO NOT apply: §1.1 byte-identical-to-sibling,
+§3/§9 slice spec & acceptance checklist, §11 per-repo stack-profile delta.
+The authority for WHAT to build is docs/phase2-architecture-plan.md +
+docs/graduated-capability-architecture.md.
+
 # AGENTS.md — Catalogue Slice (TanStack Start build)
 
 > Cross-agent context contract. Every AI coding agent (Antigravity/Gemini, Claude Code, Copilot, Cursor) reads this on each task and treats it as always-on project context. Humans: read `docs/phase1-slice-spec.md` (authoritative) for full detail — this file carries the build-critical subset.
