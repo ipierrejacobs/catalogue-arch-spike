@@ -1,0 +1,217 @@
+import type { TabName } from '../tabs'
+import type { LayoutNode } from '../utils/layout-tree'
+import type { TanStackDevtoolsPlugin } from './devtools-context'
+import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
+
+type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta'
+type KeyboardKey = ModifierKey | (string & {})
+export type { ModifierKey, KeyboardKey }
+export const keyboardModifiers: Array<ModifierKey> = [
+  'Alt',
+  'Control',
+  'Meta',
+  'Shift',
+  'CtrlOrMeta',
+]
+
+type TriggerPosition =
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'middle-left'
+  | 'middle-right'
+
+type TriggerMode = 'fixed' | 'floating'
+type TriggerCoords = { x: number; y: number }
+type TriggerCorner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+type TriggerEdge = 'top' | 'bottom' | 'left' | 'right'
+export type {
+  TriggerPosition,
+  TriggerMode,
+  TriggerCoords,
+  TriggerCorner,
+  TriggerEdge,
+}
+
+type TriggerProps = {
+  theme: TanStackDevtoolsTheme
+}
+
+export type DevtoolsStore = {
+  settings: {
+    /**
+     * Whether the dev tools should be open by default
+     * @default false
+     */
+    defaultOpen: boolean
+    /**
+     * Whether the dev tools trigger should be hidden until the user hovers over it
+     * @default false
+     */
+    hideUntilHover: boolean
+    /**
+     * The position of the trigger button (used when `triggerMode` is "fixed")
+     * @default "bottom-right"
+     */
+    position: TriggerPosition
+
+    /**
+     * How the trigger is placed on screen.
+     * - "fixed": anchored to one of the `position` corners/edges
+     * - "floating": freely draggable, position persisted in local storage
+     * @default "floating"
+     */
+    triggerMode: TriggerMode
+    /**
+     * The persisted spot of the floating trigger, as a percent (0-100) of the
+     * free space from the left and top edges. `{ x: 100, y: 100 }` is the
+     * bottom-right corner. Only used when `triggerMode` is "floating".
+     * @default undefined
+     */
+    triggerCoords?: TriggerCoords
+    /**
+     * The corner the floating trigger is pinned to, if any. A pinned trigger is
+     * re-anchored to its corner on load and on resize, instead of having its
+     * stored coordinates clamped back into view.
+     * @default undefined
+     */
+    triggerCorner?: TriggerCorner
+    /**
+     * The screen edge the floating trigger was dragged off of to hide it.
+     * While set, the trigger is a slim tab docked to that edge. Clicking the
+     * tab opens the panel, and dragging it pulls the trigger back out.
+     * @default undefined
+     */
+    triggerEdge?: TriggerEdge
+
+    /**
+     * The location of the panel once it is open
+     * @default "bottom"
+     */
+    panelLocation: 'top' | 'bottom'
+    /**
+     * The hotkey to open the dev tools
+     * @default ["Control", "~"]
+     */
+    openHotkey: Array<KeyboardKey>
+    /**
+     * The hotkey to open the source inspector
+     * @default ["Shift", "Alt", "CtrlOrMeta"]
+     */
+    inspectHotkey: Array<KeyboardKey>
+    /**
+     * Whether to require the URL flag to open the dev tools
+     * @default false
+     */
+    requireUrlFlag: boolean
+    /**
+     * The URL flag to open the dev tools, used in conjunction with requireUrlFlag (if set to true)
+     * @default "tanstack-devtools"
+     */
+    urlFlag: string
+    /**
+     * The theme of the dev tools
+     * @default "dark"
+     */
+    theme: TanStackDevtoolsTheme
+
+    /**
+     * The action to perform when clicking a source-inspected element
+     * - "ide-warp": open the file in the IDE via the Vite middleware
+     * - "copy-path": copy the file path to the clipboard
+     * @default "ide-warp"
+     */
+    sourceAction: 'ide-warp' | 'copy-path'
+    /**
+     * Builds the URL that `sourceAction: "ide-warp"` requests, from the clicked
+     * element's `data-tsd-source` value. Return an absolute URL or a path; a path
+     * is resolved against the current origin.
+     *
+     * Only needed off Vite. The default targets `__tsd/open-source`, which
+     * `@tanstack/devtools-vite` serves — a host that injects `data-tsd-source`
+     * some other way (an SWC plugin under Next.js, say) has its own endpoint and
+     * usually its own parameter shape, so replacing the whole URL is what makes
+     * the feature reachable there at all.
+     *
+     * A function rather than a string on purpose: settings are persisted to local
+     * storage and take priority over this config on the next load, so a string
+     * would keep serving whatever the app was configured with the first time it
+     * ran. `JSON.stringify` drops functions, which keeps this key out of storage
+     * the same way `customTrigger` stays out.
+     *
+     * @default undefined
+     *
+     * Example:
+     * ```ts
+     *   openSourceUrl: (source) =>
+     *     `/api/open-editor?at=${encodeURIComponent(source)}`
+     * ```
+     */
+    openSourceUrl?: (source: string) => string | URL
+    /**
+     * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
+     */
+    triggerHidden?: boolean
+    /**
+     * An optional custom function to render the dev tools trigger component.
+     * If provided, it replaces the default trigger button.
+     * @default undefined
+     */
+    customTrigger?: (el: HTMLElement, props: TriggerProps) => void
+  }
+  state: {
+    activeTab: TabName
+    height: number
+    /**
+     * How the open plugins are arranged: a tree of splits and tab groups. This
+     * is the only record of which plugins are open — `activePlugins` is derived
+     * from it by `createPlugins`, so the two can never disagree.
+     *
+     * `null` means nothing is open.
+     */
+    layout: LayoutNode | null
+    persistOpen: boolean
+    /**
+     * Whether the secondary strip (plugin and SEO tabs) is folded behind the
+     * header. Kept in state so a reload does not steal that height back.
+     * @default false
+     */
+    subheaderCollapsed: boolean
+  }
+  plugins?: Array<TanStackDevtoolsPlugin>
+}
+
+export const initialState: DevtoolsStore = {
+  settings: {
+    defaultOpen: false,
+    hideUntilHover: false,
+    position: 'bottom-right',
+    triggerMode: 'floating',
+    triggerCoords: undefined,
+    triggerCorner: undefined,
+    triggerEdge: undefined,
+    panelLocation: 'bottom',
+    openHotkey: ['Control', '~'],
+    inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
+    requireUrlFlag: false,
+    urlFlag: 'tanstack-devtools',
+    theme:
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light',
+    sourceAction: 'ide-warp',
+    openSourceUrl: undefined,
+    triggerHidden: false,
+    customTrigger: undefined,
+  },
+  state: {
+    activeTab: 'plugins',
+    height: 400,
+    layout: null,
+    persistOpen: false,
+    subheaderCollapsed: false,
+  },
+}

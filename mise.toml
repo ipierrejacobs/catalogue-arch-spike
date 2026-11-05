@@ -1,0 +1,53 @@
+# mise.toml — repo-owned dev environment contract (TanStack Start slice)
+# Single source of truth for tool versions. The dev container installs mise and
+# runs `mise install` against this file, so the container, both engineers, and the
+# agent all get the identical toolchain. Do not install tools outside mise.
+
+[tools]
+# TODO (fair fight): after the first `mise install`, replace these majors with the
+# EXACT resolved patch versions (e.g. "24.9.0", "10.4.1") and commit them — then use
+# the SAME patch versions in catalogue-slice-next. Identical tooling = the only
+# differences you measure are the framework.
+node = "24.22.1"   # LTS line
+pnpm = "12.14.0"
+
+[env]
+NODE_ENV = "development"
+# Load a local, git-ignored .env if present (never commit secrets):
+# _.file = ".env"
+
+# --- Task surface: identical command names across both repos ---------------
+# The agent and CI call `mise run <task>`; the per-framework details live in
+# package.json scripts so this file stays portable.
+
+[tasks.dev]
+description = "Dev server on :5173, bound to 0.0.0.0 for container port-forwarding"
+run = "pnpm dev"
+
+[tasks.build]
+description = "Clean production build (Vite)"
+run = "pnpm build"
+
+[tasks.preview]
+description = "Serve the production build"
+run = "pnpm preview"
+
+[tasks.test]
+description = "Unit/component tests (Vitest)"
+run = "pnpm test"
+
+[tasks.e2e]
+description = "Acceptance flows (Playwright, Chromium) — drives the §9 checklist"
+run = "pnpm e2e"
+
+[tasks.lint]
+description = "ESLint"
+run = "pnpm lint"
+
+[tasks.typecheck]
+description = "Type-check only (tsc --noEmit)"
+run = "pnpm typecheck"
+
+[tasks.verify]
+description = "Pre-commit gate: lint + typecheck + unit tests"
+depends = ["lint", "typecheck", "test"]

@@ -1,0 +1,38 @@
+import { generate } from "./generate.js";
+import { watch } from "./watch.js";
+import { cac } from "cac";
+import { getConfig } from "@tanstack/router-generator";
+//#region src/index.ts
+main();
+function main() {
+	const cli = cac("tsr");
+	cli.command("generate", "Generate the routes for a project").action(async () => {
+		const config = getConfig();
+		await generate(config, process.cwd());
+	});
+	cli.command("watch", "Continuously watch and generate the routes for a project").action(() => {
+		watch(process.cwd());
+	});
+	cli.help();
+	cli.version("1.167.45");
+	try {
+		cli.parse();
+	} catch (err) {
+		if (err instanceof Error && err.name === "CACError") {
+			console.error(err.message);
+			process.exit(1);
+		}
+		throw err;
+	}
+	if (!cli.matchedCommand && !cli.options.help && !cli.options.version) {
+		if (cli.args.length && cli.args[0] !== "help") {
+			console.error(`Unknown command: ${cli.args.join(" ")}\n`);
+			process.exitCode = 1;
+		}
+		cli.outputHelp();
+	}
+}
+//#endregion
+export { main };
+
+//# sourceMappingURL=index.js.map

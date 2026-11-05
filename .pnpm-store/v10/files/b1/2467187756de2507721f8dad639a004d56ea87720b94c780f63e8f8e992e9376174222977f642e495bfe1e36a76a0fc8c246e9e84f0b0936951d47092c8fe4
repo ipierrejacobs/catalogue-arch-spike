@@ -1,0 +1,39 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+const require_generate = require("./generate.cjs");
+const require_watch = require("./watch.cjs");
+let cac = require("cac");
+let _tanstack_router_generator = require("@tanstack/router-generator");
+//#region src/index.ts
+main();
+function main() {
+	const cli = (0, cac.cac)("tsr");
+	cli.command("generate", "Generate the routes for a project").action(async () => {
+		const config = (0, _tanstack_router_generator.getConfig)();
+		await require_generate.generate(config, process.cwd());
+	});
+	cli.command("watch", "Continuously watch and generate the routes for a project").action(() => {
+		require_watch.watch(process.cwd());
+	});
+	cli.help();
+	cli.version("1.167.45");
+	try {
+		cli.parse();
+	} catch (err) {
+		if (err instanceof Error && err.name === "CACError") {
+			console.error(err.message);
+			process.exit(1);
+		}
+		throw err;
+	}
+	if (!cli.matchedCommand && !cli.options.help && !cli.options.version) {
+		if (cli.args.length && cli.args[0] !== "help") {
+			console.error(`Unknown command: ${cli.args.join(" ")}\n`);
+			process.exitCode = 1;
+		}
+		cli.outputHelp();
+	}
+}
+//#endregion
+exports.main = main;
+
+//# sourceMappingURL=index.cjs.map

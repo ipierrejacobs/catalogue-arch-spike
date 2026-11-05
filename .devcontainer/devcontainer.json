@@ -1,0 +1,58 @@
+// devcontainer.json (JSONC) — TanStack Start slice
+// CLI-first: works with `devcontainer up` + `devcontainer exec` as well as VS Code's
+// native "Reopen in Container". Tool versions come from mise (../mise.toml), so this
+// file stays thin and the container matches both engineers and the agent exactly.
+{
+  "name": "catalogue-slice-tanstack-start",
+
+  // Stable base; swap the tag for a digest (ubuntu-24.04@sha256:...) if you want
+  // bit-for-bit reproducibility. Node/pnpm are NOT installed here — mise owns them.
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+
+  // Put mise shims + bin on PATH so non-interactive `devcontainer exec` (and the
+  // agent) resolve node/pnpm/playwright without a login shell.
+  "remoteEnv": {
+    "PATH": "/home/vscode/.local/share/mise/shims:/home/vscode/.local/bin:${containerEnv:PATH}"
+  },
+
+  // Minimal OS packages mise + node-gyp-ish builds may need.
+  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential unzip ca-certificates curl git",
+
+  // Install mise, materialise the pinned toolchain, then project deps + the Playwright
+  // browser used by the acceptance suite. `--with-deps` uses the vscode user's sudo;
+  // drop it if your base image lacks passwordless sudo.
+  "postCreateCommand": "curl -fsSL https://mise.run | MISE_INSTALL_PATH=/home/vscode/.local/bin/mise sh && mise trust && mise install && mise reshim && mise exec -- pnpm install && mise exec -- pnpm exec playwright install --with-deps chromium",
+
+  "runArgs": ["-p", "127.0.0.1:5173:5173"],
+
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": { "label": "TanStack Start dev", "onAutoForward": "notify" }
+  },
+
+  "remoteUser": "vscode",
+  "shutdownAction": "stopContainer",
+
+  // VS Code–specific; honored when VS Code (or a compatible fork) opens the container.
+  // The agent doesn't need these — it uses the CLI + mise tasks.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ZixuanChen.vitest-explorer",
+        "ms-playwright.playwright",
+        "editorconfig.editorconfig",
+        "yoavbls.pretty-ts-errors",
+        "usernamehw.errorlens"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
+}
