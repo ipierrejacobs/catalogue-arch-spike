@@ -176,6 +176,11 @@
 	--cmp-button-secondary-fg: var(--sem-color-fg-primary);
 	--cmp-button-secondary-border: var(--sem-color-border-strong);
 
+	--cmp-button-soft-bg: var(--sem-color-bg-subtle);
+	--cmp-button-soft-bg-hover: var(--sem-color-bg-hover);
+	--cmp-button-soft-fg: var(--sem-color-fg-primary);
+	--cmp-button-soft-border: var(--sem-color-border-default);
+
 	--cmp-button-ghost-bg: transparent;
 	--cmp-button-ghost-bg-hover: var(--sem-color-bg-hover);
 	--cmp-button-ghost-fg: var(--sem-color-fg-secondary);
@@ -246,6 +251,11 @@
 	--color-btn-secondary-fg: var(--cmp-button-secondary-fg);
 	--color-btn-secondary-border: var(--cmp-button-secondary-border);
 
+	--color-btn-soft: var(--cmp-button-soft-bg);
+	--color-btn-soft-hover: var(--cmp-button-soft-bg-hover);
+	--color-btn-soft-fg: var(--cmp-button-soft-fg);
+	--color-btn-soft-border: var(--cmp-button-soft-border);
+
 	--color-btn-ghost: var(--cmp-button-ghost-bg);
 	--color-btn-ghost-hover: var(--cmp-button-ghost-bg-hover);
 	--color-btn-ghost-fg: var(--cmp-button-ghost-fg);
@@ -253,6 +263,18 @@
 	--color-btn-danger: var(--cmp-button-danger-bg);
 	--color-btn-danger-hover: var(--cmp-button-danger-bg-hover);
 	--color-btn-danger-fg: var(--cmp-button-danger-fg);
+
+	--spacing-btn-h-sm: var(--cmp-button-h-sm);
+	--spacing-btn-h-md: var(--cmp-button-h-md);
+	--spacing-btn-h-lg: var(--cmp-button-h-lg);
+	--spacing-btn-px-sm: var(--cmp-button-px-sm);
+	--spacing-btn-px-md: var(--cmp-button-px-md);
+	--spacing-btn-px-lg: var(--cmp-button-px-lg);
+
+	--text-btn-sm: var(--cmp-button-text-sm);
+	--text-btn-md: var(--cmp-button-text-md);
+	--text-btn-lg: var(--cmp-button-text-lg);
+	--font-weight-btn: var(--cmp-button-font-weight);
 
 	--color-table-bg: var(--cmp-table-bg);
 	--color-table-header-bg: var(--cmp-table-header-bg);

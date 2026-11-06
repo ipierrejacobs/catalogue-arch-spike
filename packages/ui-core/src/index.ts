@@ -36,3 +36,6 @@ export interface GraduatedComponentMeta<TTier extends ComponentTier = ComponentT
 	readonly capabilities: readonly CapabilityType[];
 	readonly layersPopulated: readonly ("behavior" | "ports" | "parts" | "styles")[];
 }
+
+export * from "./button";
+

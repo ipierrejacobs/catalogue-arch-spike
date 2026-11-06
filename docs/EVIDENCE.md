@@ -36,7 +36,7 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 
 | Proof | How shown | Result |
 |---|---|---|
-| (a) Leaf stays port-free | `button.ports.ts` absent · lint guard green · **bite-demo**: fixture importing `@platform/ports` fails lint, then green after delete · Button tests pass with **zero providers** | ☐ |
+| (a) Leaf stays port-free | `button.ports.ts` absent · lint guard green · **bite-demo**: fixture importing `@platform/ports` fails lint, then green after delete · Button tests pass with **zero providers** | ☑ (`packages/ui-core/src/button/button.test.tsx` + `stage0-scaffold.test.ts`) |
 | (b) Macro brick business-logic-free | `grep` `@platform/ui` for any entity/endpoint/permission/nav name → none · column defs + rules live only in the `FlowsTable` feature container | ☐ |
 | (c) State-placement law holds (§5) | per-seam tests: sort/filter/page in URL · server rows only in Query · selection/bulk in Zustand · editing-cell draft/hover/focus local | ☐ |
 | (d) One template serves both | Button and DataTable are the same four-layer folder shape; differ only in which layers are populated | ☐ |
@@ -51,9 +51,9 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 - Did the lint guard bite cleanly? Yes — enforced structurally in both Biome (`lint/style/noRestrictedImports` override on `packages/ui-core/src/**` excluding `data-table`) and ESLint (`platform-arch/no-ports-in-leaf-tiers` + `platform-arch/no-prohibited-apis` + `react-compiler/react-compiler`). Confirmed with a live bite-demo fixture (`packages/ui-core/src/button/button.bite-demo.ts` importing `@platform/ports`) which failed `mise run lint` with `Graduated-Capability Violation`, plus an automated Vitest suite (`packages/ui-core/src/__tests__/stage0-scaffold.test.ts`) that programmatically asserts the rule bites on both `@platform/ports` imports and non-empty `<name>.ports.ts` files in Tier 0–2 leaves.
 
 **Stage 1 — Button (Tier 1, negative proof).**
-- Base UI behavior wrap: ___
-- `render`/`useRender` substitution (render-as-link, AppLink in the app): ___
-- Zero-provider testing — any friction? ___
+- Base UI behavior wrap: `packages/ui-core/src/button/button.behavior.ts` wraps `@base-ui/react/button`. Notable `@base-ui/react@1.9.0` finding: `useButton` defaults `nativeButton: true` and logs a dev error if `render` produces a non-`<button>` element (like `<a>`) while `nativeButton` is `true`. Setting `nativeButton = options.nativeButton ?? !options.hasCustomRender` in `resolveButtonBehaviorProps` gives native `<button type="button">` by default and seamless non-native `role="button"` / `aria-disabled` / Space-key activation when `render` is passed.
+- `render`/`useRender` substitution (render-as-link, AppLink in the app): `button.parts.tsx` exposes `ButtonRenderProp` (`useRender.RenderProp<ButtonRenderState>`) and merges token classes + `data-variant` / `data-size` via `@base-ui/react/merge-props`. `src/components/AppLink.tsx` lives in the app layer and maps `to` → `href`, so `<Button render={<AppLink to="/orders" />}>` renders an `<a>` with all button behavior/tokens and zero router imports inside `@platform/ui`. Notable `@base-ui/react` composition detail: `mergeProps(a, b)` executes event handlers right-to-left (`b` before `a`), so `AppLink` puts its own handler leftmost and checks `aria-disabled` / `data-disabled` injected by Base UI when `Button` is disabled.
+- Zero-provider testing — any friction? Zero friction. All 5 tests in `packages/ui-core/src/button/button.test.tsx` render `<Button>` directly via `@testing-library/react` with zero context providers.
 
 **Stage 2 — DataTable core + ports (in-memory).**
 - v9 native API drop-in (`useTable`, explicit `tableFeatures`, manual mode). Note v9-specific ceremony **separately** from framework friction: ___
