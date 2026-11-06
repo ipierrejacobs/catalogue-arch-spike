@@ -1,0 +1,271 @@
+/* SEAM (Phase 3): Replace hand-authored primitive/semantic/component CSS variables below with Style Dictionary v5 css/variables output (outputReferences: true) compiled from DTCG 2025.10 token JSON. */
+
+/* ==========================================================================
+   TIER 1 — PRIMITIVE TOKENS (raw palette, spacing, typography, radius scales)
+   Never referenced directly by component .styles.ts files.
+   ========================================================================== */
+:root {
+	/* Neutral slate scale */
+	--prim-color-slate-0: #ffffff;
+	--prim-color-slate-50: #f8fafc;
+	--prim-color-slate-100: #f1f5f9;
+	--prim-color-slate-200: #e2e8f0;
+	--prim-color-slate-300: #cbd5e1;
+	--prim-color-slate-400: #94a3b8;
+	--prim-color-slate-500: #64748b;
+	--prim-color-slate-600: #475569;
+	--prim-color-slate-700: #334155;
+	--prim-color-slate-800: #1e293b;
+	--prim-color-slate-900: #0f172a;
+	--prim-color-slate-950: #020617;
+
+	/* Brand / interactive blue scale */
+	--prim-color-blue-50: #eff6ff;
+	--prim-color-blue-100: #dbeafe;
+	--prim-color-blue-500: #3b82f6;
+	--prim-color-blue-600: #2563eb;
+	--prim-color-blue-700: #1d4ed8;
+	--prim-color-blue-800: #1e40af;
+
+	/* Status scales */
+	--prim-color-emerald-50: #ecfdf5;
+	--prim-color-emerald-600: #059669;
+	--prim-color-amber-50: #fffbeb;
+	--prim-color-amber-600: #d97706;
+	--prim-color-red-50: #fef2f2;
+	--prim-color-red-100: #fee2e2;
+	--prim-color-red-600: #dc2626;
+	--prim-color-red-700: #b91c1c;
+
+	/* Spacing scale */
+	--prim-space-1: 0.25rem;
+	--prim-space-1-5: 0.375rem;
+	--prim-space-2: 0.5rem;
+	--prim-space-2-5: 0.625rem;
+	--prim-space-3: 0.75rem;
+	--prim-space-4: 1rem;
+	--prim-space-5: 1.25rem;
+	--prim-space-6: 1.5rem;
+
+	/* Control heights */
+	--prim-size-control-sm: 1.75rem;
+	--prim-size-control-md: 2.25rem;
+	--prim-size-control-lg: 2.75rem;
+	--prim-size-row-compact: 2.25rem;
+	--prim-size-row-default: 2.75rem;
+	--prim-size-row-comfortable: 3.25rem;
+
+	/* Radius scale */
+	--prim-radius-sm: 0.25rem;
+	--prim-radius-md: 0.375rem;
+	--prim-radius-lg: 0.5rem;
+
+	/* Typography scale */
+	--prim-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--prim-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+	--prim-text-xs: 0.75rem;
+	--prim-text-sm: 0.875rem;
+	--prim-text-base: 1rem;
+	--prim-font-weight-normal: 400;
+	--prim-font-weight-medium: 500;
+	--prim-font-weight-semibold: 600;
+}
+
+/* ==========================================================================
+   TIER 2 — SEMANTIC TOKENS (role-based aliases -> var(--prim-*))
+   Theme & density switching are pure CSS-variable swaps (zero React context).
+   ========================================================================== */
+:root,
+[data-theme="light"] {
+	--sem-color-bg-canvas: var(--prim-color-slate-50);
+	--sem-color-bg-surface: var(--prim-color-slate-0);
+	--sem-color-bg-subtle: var(--prim-color-slate-100);
+	--sem-color-bg-hover: var(--prim-color-slate-100);
+	--sem-color-bg-selected: var(--prim-color-blue-50);
+
+	--sem-color-fg-primary: var(--prim-color-slate-900);
+	--sem-color-fg-secondary: var(--prim-color-slate-600);
+	--sem-color-fg-muted: var(--prim-color-slate-500);
+	--sem-color-fg-on-accent: var(--prim-color-slate-0);
+
+	--sem-color-accent-default: var(--prim-color-blue-600);
+	--sem-color-accent-hover: var(--prim-color-blue-700);
+	--sem-color-accent-active: var(--prim-color-blue-800);
+	--sem-color-accent-subtle: var(--prim-color-blue-100);
+
+	--sem-color-danger-default: var(--prim-color-red-600);
+	--sem-color-danger-hover: var(--prim-color-red-700);
+	--sem-color-danger-subtle: var(--prim-color-red-50);
+
+	--sem-color-success-fg: var(--prim-color-emerald-600);
+	--sem-color-success-subtle: var(--prim-color-emerald-50);
+	--sem-color-warning-fg: var(--prim-color-amber-600);
+	--sem-color-warning-subtle: var(--prim-color-amber-50);
+
+	--sem-color-border-default: var(--prim-color-slate-200);
+	--sem-color-border-strong: var(--prim-color-slate-300);
+	--sem-color-border-focus: var(--prim-color-blue-500);
+
+	--sem-density-row-height: var(--prim-size-row-default);
+	--sem-density-cell-px: var(--prim-space-3);
+	--sem-density-cell-py: var(--prim-space-2);
+}
+
+[data-theme="dark"] {
+	--sem-color-bg-canvas: var(--prim-color-slate-950);
+	--sem-color-bg-surface: var(--prim-color-slate-900);
+	--sem-color-bg-subtle: var(--prim-color-slate-800);
+	--sem-color-bg-hover: var(--prim-color-slate-800);
+	--sem-color-bg-selected: var(--prim-color-blue-800);
+
+	--sem-color-fg-primary: var(--prim-color-slate-50);
+	--sem-color-fg-secondary: var(--prim-color-slate-300);
+	--sem-color-fg-muted: var(--prim-color-slate-400);
+	--sem-color-fg-on-accent: var(--prim-color-slate-0);
+
+	--sem-color-accent-default: var(--prim-color-blue-500);
+	--sem-color-accent-hover: var(--prim-color-blue-600);
+	--sem-color-accent-active: var(--prim-color-blue-700);
+	--sem-color-accent-subtle: var(--prim-color-slate-800);
+
+	--sem-color-border-default: var(--prim-color-slate-800);
+	--sem-color-border-strong: var(--prim-color-slate-700);
+	--sem-color-border-focus: var(--prim-color-blue-500);
+}
+
+[data-density="compact"] {
+	--sem-density-row-height: var(--prim-size-row-compact);
+	--sem-density-cell-px: var(--prim-space-2);
+	--sem-density-cell-py: var(--prim-space-1);
+}
+
+[data-density="comfortable"] {
+	--sem-density-row-height: var(--prim-size-row-comfortable);
+	--sem-density-cell-px: var(--prim-space-4);
+	--sem-density-cell-py: var(--prim-space-3);
+}
+
+/* ==========================================================================
+   TIER 3 — COMPONENT TOKENS (Button Tier 1 + DataTable Tier 4)
+   All values reference Tier 2 semantic or Tier 1 scale variables via var().
+   ========================================================================== */
+:root {
+	/* Button (Tier 1) */
+	--cmp-button-radius: var(--prim-radius-md);
+	--cmp-button-font-weight: var(--prim-font-weight-medium);
+
+	--cmp-button-h-sm: var(--prim-size-control-sm);
+	--cmp-button-h-md: var(--prim-size-control-md);
+	--cmp-button-h-lg: var(--prim-size-control-lg);
+
+	--cmp-button-px-sm: var(--prim-space-2-5);
+	--cmp-button-px-md: var(--prim-space-3);
+	--cmp-button-px-lg: var(--prim-space-4);
+
+	--cmp-button-text-sm: var(--prim-text-xs);
+	--cmp-button-text-md: var(--prim-text-sm);
+	--cmp-button-text-lg: var(--prim-text-base);
+
+	--cmp-button-primary-bg: var(--sem-color-accent-default);
+	--cmp-button-primary-bg-hover: var(--sem-color-accent-hover);
+	--cmp-button-primary-bg-active: var(--sem-color-accent-active);
+	--cmp-button-primary-fg: var(--sem-color-fg-on-accent);
+
+	--cmp-button-secondary-bg: var(--sem-color-bg-surface);
+	--cmp-button-secondary-bg-hover: var(--sem-color-bg-hover);
+	--cmp-button-secondary-fg: var(--sem-color-fg-primary);
+	--cmp-button-secondary-border: var(--sem-color-border-strong);
+
+	--cmp-button-ghost-bg: transparent;
+	--cmp-button-ghost-bg-hover: var(--sem-color-bg-hover);
+	--cmp-button-ghost-fg: var(--sem-color-fg-secondary);
+
+	--cmp-button-danger-bg: var(--sem-color-danger-default);
+	--cmp-button-danger-bg-hover: var(--sem-color-danger-hover);
+	--cmp-button-danger-fg: var(--sem-color-fg-on-accent);
+
+	/* DataTable (Tier 4) */
+	--cmp-table-bg: var(--sem-color-bg-surface);
+	--cmp-table-header-bg: var(--sem-color-bg-subtle);
+	--cmp-table-header-fg: var(--sem-color-fg-secondary);
+	--cmp-table-row-bg: var(--sem-color-bg-surface);
+	--cmp-table-row-hover-bg: var(--sem-color-bg-hover);
+	--cmp-table-row-selected-bg: var(--sem-color-bg-selected);
+	--cmp-table-border: var(--sem-color-border-default);
+	--cmp-table-radius: var(--prim-radius-lg);
+	--cmp-table-row-height: var(--sem-density-row-height);
+	--cmp-table-cell-px: var(--sem-density-cell-px);
+	--cmp-table-cell-py: var(--sem-density-cell-py);
+	--cmp-table-cell-edit-ring: var(--sem-color-border-focus);
+	--cmp-table-cell-saving-bg: var(--sem-color-accent-subtle);
+	--cmp-table-cell-error-bg: var(--sem-color-danger-subtle);
+	--cmp-table-cell-error-ring: var(--sem-color-danger-default);
+}
+
+/* ==========================================================================
+   TAILWIND V4 @theme inline MAPPING
+   Resolves Tailwind utilities directly to our semantic & component tokens.
+   ========================================================================== */
+@theme inline {
+	--font-sans: var(--prim-font-sans);
+	--font-mono: var(--prim-font-mono);
+
+	/* Semantic surfaces & text */
+	--color-canvas: var(--sem-color-bg-canvas);
+	--color-surface: var(--sem-color-bg-surface);
+	--color-subtle: var(--sem-color-bg-subtle);
+	--color-surface-hover: var(--sem-color-bg-hover);
+	--color-surface-selected: var(--sem-color-bg-selected);
+
+	--color-fg-primary: var(--sem-color-fg-primary);
+	--color-fg-secondary: var(--sem-color-fg-secondary);
+	--color-fg-muted: var(--sem-color-fg-muted);
+	--color-fg-on-accent: var(--sem-color-fg-on-accent);
+
+	--color-accent: var(--sem-color-accent-default);
+	--color-accent-hover: var(--sem-color-accent-hover);
+	--color-accent-active: var(--sem-color-accent-active);
+	--color-accent-subtle: var(--sem-color-accent-subtle);
+
+	--color-danger: var(--sem-color-danger-default);
+	--color-danger-hover: var(--sem-color-danger-hover);
+	--color-danger-subtle: var(--sem-color-danger-subtle);
+
+	--color-border-default: var(--sem-color-border-default);
+	--color-border-strong: var(--sem-color-border-strong);
+	--color-border-focus: var(--sem-color-border-focus);
+
+	/* Component-tier token mappings for Button and DataTable */
+	--color-btn-primary: var(--cmp-button-primary-bg);
+	--color-btn-primary-hover: var(--cmp-button-primary-bg-hover);
+	--color-btn-primary-active: var(--cmp-button-primary-bg-active);
+	--color-btn-primary-fg: var(--cmp-button-primary-fg);
+
+	--color-btn-secondary: var(--cmp-button-secondary-bg);
+	--color-btn-secondary-hover: var(--cmp-button-secondary-bg-hover);
+	--color-btn-secondary-fg: var(--cmp-button-secondary-fg);
+	--color-btn-secondary-border: var(--cmp-button-secondary-border);
+
+	--color-btn-ghost: var(--cmp-button-ghost-bg);
+	--color-btn-ghost-hover: var(--cmp-button-ghost-bg-hover);
+	--color-btn-ghost-fg: var(--cmp-button-ghost-fg);
+
+	--color-btn-danger: var(--cmp-button-danger-bg);
+	--color-btn-danger-hover: var(--cmp-button-danger-bg-hover);
+	--color-btn-danger-fg: var(--cmp-button-danger-fg);
+
+	--color-table-bg: var(--cmp-table-bg);
+	--color-table-header-bg: var(--cmp-table-header-bg);
+	--color-table-header-fg: var(--cmp-table-header-fg);
+	--color-table-row-bg: var(--cmp-table-row-bg);
+	--color-table-row-hover: var(--cmp-table-row-hover-bg);
+	--color-table-row-selected: var(--cmp-table-row-selected-bg);
+	--color-table-border: var(--cmp-table-border);
+	--color-table-edit-ring: var(--cmp-table-cell-edit-ring);
+	--color-table-saving-bg: var(--cmp-table-cell-saving-bg);
+	--color-table-error-bg: var(--cmp-table-cell-error-bg);
+	--color-table-error-ring: var(--cmp-table-cell-error-ring);
+
+	--radius-btn: var(--cmp-button-radius);
+	--radius-table: var(--cmp-table-radius);
+}

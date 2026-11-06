@@ -9,11 +9,13 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**/src/**/*",
+			"**/packages/**/*",
 			"**/.vscode/**/*",
 			"**/index.html",
 			"**/vite.config.ts",
 			"!**/src/routeTree.gen.ts",
-			"!**/src/styles.css"
+			"!**/src/styles.css",
+			"!**/packages/tokens/src/tokens.css"
 		]
 	},
 	"formatter": {
@@ -24,9 +26,50 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"@tanstack/react-table/legacy": "Table v9 Violation: Do not import from @tanstack/react-table/legacy. Use native v9 useTable + tableFeatures.",
+							"@mui/base": "Primitive Layer Violation: @mui/base is deprecated. Use @base-ui/react.",
+							"@base-ui-components/react": "Primitive Layer Violation: @base-ui-components/react is deprecated. Use @base-ui/react."
+						}
+					}
+				}
+			}
 		}
 	},
+	"overrides": [
+		{
+			"includes": [
+				"**/packages/ui-core/src/**/*",
+				"!**/packages/ui-core/src/data-table/**/*",
+				"!**/packages/ui-core/src/__tests__/**/*"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@platform/ports": "Graduated-Capability Violation: Tier 0–2 components in @platform/ui are forbidden from importing @platform/ports."
+								},
+								"patterns": [
+									{
+										"group": ["@platform/ports/*", "**/ports", "**/ports/*"],
+										"message": "Graduated-Capability Violation: Tier 0–2 components in @platform/ui are forbidden from importing @platform/ports."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		}
+	],
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"

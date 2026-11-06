@@ -5,7 +5,10 @@ export default defineConfig({
 		tsconfigPaths: true,
 	},
 	test: {
-		include: ["src/**/*.{test,spec}.{ts,tsx}"],
+		include: [
+			"src/**/*.{test,spec}.{ts,tsx}",
+			"packages/**/*.{test,spec}.{ts,tsx}",
+		],
 		exclude: ["e2e/**", "node_modules/**", "src/shared/**"],
 	},
 });
