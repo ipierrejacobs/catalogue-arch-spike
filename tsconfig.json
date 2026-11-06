@@ -1,5 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", ".output"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
@@ -7,7 +8,15 @@
     "paths": {
       "#/*": ["./src/*"],
       "@/*": ["./src/*"],
-      "@shared/*": ["./src/shared/src/*"]
+      "@shared/*": ["./src/shared/src/*"],
+      "@platform/tokens": ["./packages/tokens/src/index.ts"],
+      "@platform/tokens/*": ["./packages/tokens/src/*"],
+      "@platform/ports": ["./packages/ports/src/index.ts"],
+      "@platform/ports/*": ["./packages/ports/src/*"],
+      "@platform/ui": ["./packages/ui-core/src/index.ts"],
+      "@platform/ui/*": ["./packages/ui-core/src/*"],
+      "@platform/adapters": ["./packages/adapters/src/index.ts"],
+      "@platform/adapters/*": ["./packages/adapters/src/*"]
     },
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],

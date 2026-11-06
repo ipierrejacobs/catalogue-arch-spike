@@ -1,5 +1,5 @@
-
 @import "tailwindcss";
+@import "../packages/tokens/src/tokens.css";
 
 * {
   box-sizing: border-box;
@@ -13,5 +13,7 @@ body,
 
 body {
   margin: 0;
+  background-color: var(--sem-color-bg-canvas);
+  color: var(--sem-color-fg-primary);
+  font-family: var(--prim-font-sans);
 }
-

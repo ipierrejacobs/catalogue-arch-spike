@@ -1,0 +1,18 @@
+{
+	"name": "@platform/adapters",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@platform/ports": "workspace:*",
+		"@tanstack/react-query": "5.104.5",
+		"@tanstack/react-router": "1.170.45",
+		"zustand": "5.0.16"
+	},
+	"peerDependencies": {
+		"react": "19.3.0"
+	}
+}

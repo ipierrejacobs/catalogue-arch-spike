@@ -22,13 +22,13 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 
 | Dep | Pinned version (exact) | Notes |
 |---|---|---|
-| `@base-ui/react` | ___ | NEW package name; `@mui/base` / `@base-ui-components/react` are deprecated |
-| `@tanstack/react-table` | ___ | v9 native API only (no `stockFeatures`, no `/legacy`) |
-| `@tanstack/react-virtual` | ___ | 3.17.x line |
-| `@tanstack/react-query` | ___ | match bake-off pin |
-| `zustand` | ___ | match bake-off pin |
-| React Compiler | ___ | + ESLint rules on? ☐ |
-| TanStack Start / Vite | ___ / ___ | |
+| `@base-ui/react` | `1.9.0` | NEW package name; `@mui/base` / `@base-ui-components/react` are deprecated |
+| `@tanstack/react-table` | `9.3.1` | v9 native API only (no `stockFeatures`, no `/legacy`) |
+| `@tanstack/react-virtual` | `3.14.24` | matches existing bake-off exact pin (`src/shared/package.json` peerDep; latest npm is `3.14.26`) |
+| `@tanstack/react-query` | `5.104.5` | match bake-off pin |
+| `zustand` | `5.0.16` | match bake-off pin |
+| React Compiler | `babel-plugin-react-compiler@1.0.0` + `eslint-plugin-react-compiler@19.1.0-rc.2` | + ESLint rules on? ☑ |
+| TanStack Start / Vite | `1.169.3` / `8.0.0` | `@tanstack/react-router@1.170.45`, `typescript@7.0.2`, `@biomejs/biome@2.4.5`, `eslint@10.14.0` |
 
 ---
 
@@ -46,9 +46,9 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 ## §3 — DX / architecture notes (narrative, per stage)
 
 **Stage 0 — scaffold + tokens + lint guard.**
-- Workspace shape / what the four-layer template felt like to stand up: ___
-- Token seed (primitive → semantic → component; CSS vars + Tailwind `@theme inline`): ___
-- Did the lint guard bite cleanly? ___
+- Workspace shape / what the four-layer template felt like to stand up: Clean pnpm monorepo split under `packages/` (`@platform/tokens`, `@platform/ports`, `@platform/ui`, `@platform/adapters`) mapped in `tsconfig.json` (`bundler` resolution) and Vite `tsconfigPaths`.
+- Token seed (primitive → semantic → component; CSS vars + Tailwind `@theme inline`): Hand-authored in `packages/tokens/src/tokens.css` with three strict tiers (`--prim-*` → `--sem-*` → `--cmp-*`) and Tailwind v4 `@theme inline` utility bindings. Theme (`[data-theme="dark"]`) and density (`[data-density="compact"|"comfortable"]`) are pure CSS-variable swaps with zero React context. Includes the explicit Phase 3 seam comment for DTCG 2025.10 → Style Dictionary v5 (`outputReferences: true`).
+- Did the lint guard bite cleanly? Yes — enforced structurally in both Biome (`lint/style/noRestrictedImports` override on `packages/ui-core/src/**` excluding `data-table`) and ESLint (`platform-arch/no-ports-in-leaf-tiers` + `platform-arch/no-prohibited-apis` + `react-compiler/react-compiler`). Confirmed with a live bite-demo fixture (`packages/ui-core/src/button/button.bite-demo.ts` importing `@platform/ports`) which failed `mise run lint` with `Graduated-Capability Violation`, plus an automated Vitest suite (`packages/ui-core/src/__tests__/stage0-scaffold.test.ts`) that programmatically asserts the rule bites on both `@platform/ports` imports and non-empty `<name>.ports.ts` files in Tier 0–2 leaves.
 
 **Stage 1 — Button (Tier 1, negative proof).**
 - Base UI behavior wrap: ___
@@ -81,7 +81,8 @@ _The spike is built on TanStack Start (paper leader). The headless core + ports 
 
 | Stage | Deviation or finding | Why | Resolution |
 |---|---|---|---|
-| ___ | ___ | ___ | ___ |
+| Stage 0 | `@tanstack/react-virtual` pinned at `3.14.24` | Matches existing bake-off pin in `package.json` & `src/shared/package.json` (`3.17.x` does not exist on npm; latest is `3.14.26`). | Kept exact `3.14.24` pin to match existing workspace lockfile and `src/shared` peer dependency. |
+| Stage 0 | `typescript-eslint@8.72.1` hard-blocks `typescript@7.0.2` | `typescript-eslint` throws `typescript-eslint does not support TS 7.0` at import time. | Used `@babel/parser` in ESTree mode (`plugins: ["typescript", "jsx", "estree"]`, bundled with `babel-plugin-react-compiler@1.0.0`) inside `eslint.config.mjs`, which natively parses TS 7.0 + JSX and powers both `eslint-plugin-react-compiler` and `platform-arch/*` rules. |
 
 ---
 
