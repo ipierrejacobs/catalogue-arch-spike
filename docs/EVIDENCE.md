@@ -4,7 +4,7 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 
 **Spike:** Graduated-Capability Component Architecture, trialed on the full React + TanStack Start stack.
 **Authority for what to build:** `docs/phase2-architecture-plan.md` + `docs/graduated-capability-architecture.md`.
-**Status:** ☐ in progress.
+**Status:** ☑ complete (awaiting human gate review).
 
 ---
 
@@ -36,10 +36,10 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 
 | Proof | How shown | Result |
 |---|---|---|
-| (a) Leaf stays port-free | `button.ports.ts` absent · lint guard green · **bite-demo**: fixture importing `@platform/ports` fails lint, then green after delete · Button tests pass with **zero providers** | ☑ (`packages/ui-core/src/button/button.test.tsx` + `stage0-scaffold.test.ts`) |
-| (b) Macro brick business-logic-free | `grep` `@platform/ui` for any entity/endpoint/permission/nav name → none · column defs + rules live only in the `FlowsTable` feature container | ☐ |
-| (c) State-placement law holds (§5) | per-seam tests: sort/filter/page in URL · server rows only in Query · selection/bulk in Zustand · editing-cell draft/hover/focus local | ☐ |
-| (d) One template serves both | Button and DataTable are the same four-layer folder shape; differ only in which layers are populated | ☑ (`packages/ui-core/src/button/*` [L2 absent] vs `packages/ui-core/src/datatable/*` [all 4 layers populated]) |
+| (a) Leaf stays port-free | `button.ports.ts` absent · lint guard green · **bite-demo**: fixture importing `@platform/ports` fails lint (even when placed inside `datatable/`), then green after delete · Button tests pass with **zero providers** | ☑ (`packages/ui-core/src/button/button.test.tsx` [5 zero-provider tests] + `packages/ui-core/src/__tests__/stage0-scaffold.test.ts` [`ESLint.lintText` bite & allow assertions]) |
+| (b) Macro brick business-logic-free | `grep` `@platform/ui` (`datatable/`) & `@platform/ports` for any entity/endpoint/permission/nav name → none · column defs + rules live only in the `FlowsTable` feature container | ☑ (`grep -rnE "flows\|collaborations\|IntegrationFlow\|/api/\|CATALOGUE_\|slaTargetMs\|avgLatencyMs\|throughputPerMin" packages/ui-core/src/datatable packages/ports/src` → **0 matches**; all domain columns/validation/permissions live in `src/features/flows/FlowsTable.tsx`) |
+| (c) State-placement law holds (§5) | per-seam tests: sort/filter/page in URL · server rows only in Query · selection/bulk in Zustand · editing-cell draft/hover/focus local | ☑ (`packages/adapters/src/__tests__/stage3-adapters.test.tsx` — 4 dedicated per-seam tests: Seam 1 Server→Query [never in Zustand], Seam 2 URL→Router [cold reload + no internal `useState` drift], Seam 3 App→Zustand via `ViewStatePort`, Seam 4 Local UI→Component) |
+| (d) One template serves both | Button and DataTable are the same four-layer folder shape; differ only in which layers are populated | ☑ (`packages/ui-core/src/button/*` [L2 absent] vs `packages/ui-core/src/datatable/*` [all 4 layers populated]; `git diff main -- packages/ui-core` in Stage 3 is empty) |
 
 ---
 
@@ -61,9 +61,9 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 - Did the five port interfaces feel right, or over-abstracted, against in-memory adapters? The five narrow ports (`RowSourcePort`, `RowMutationPort`, `NavigationPort`, `PermissionPort`, optional `ViewStatePort`) with one context/provider per port felt natural and composable. Exposing top-level convenience hooks (`useRowSource`, `useOptionalRowMutation`, `useNavigationHref`) in `datatable.ports.ts` also satisfied `eslint-plugin-react-compiler`'s static hook analysis without requiring a god-adapter. Reusable contract helpers (`assertRowSourcePortContract`, `assertRowMutationPortContract`, `assertNavigationPortContract`, `assertPermissionPortContract`, `assertViewStatePortContract`) in `@platform/ports` verify all five contracts with neutral placeholders (`/items/item-1`, `type: "item"`, `id: "item-1"`, `"sample-view"`).
 
 **Stage 3 — real adapters + feature container.**
-- RowSource/RowMutation/Navigation/Permission/ViewState adapters on the real stack: ___
-- Optimistic edit (cache `onMutate` + rollback; `problem+json` → field errors): ___
-- **Did any port interface have to change when wired to the real stack?** (the key finding) ___
+- RowSource/RowMutation/Navigation/Permission/ViewState adapters on the real stack: Implemented in `packages/adapters/src/` (`createQueryRowSourceAdapter`, `createQueryRowMutationAdapter`, `createRouterNavigationAdapter`, `createSessionPermissionAdapter`, `createZustandViewStateAdapter`). Each real adapter passed its Stage-2 `assert*PortContract` helper **unchanged** on the first run. `FlowsTableContainer` (`src/features/flows/FlowsTable.tsx`) composes all five individual port providers around `<DataTable.Root<IntegrationFlow>>` (one provider per port, no god-adapter) and owns all `IntegrationFlow` column definitions, `flows` query keys, `FlowsSearch` URL parameter translation, RFC 7807 `problem+json` validation rules, and `CATALOGUE_EDITOR` role rules. Meanwhile, the Tier-1 `<Button>` in `DataTable.Toolbar` receives `disabled={!canEditOrCreate}` and `title="Requires CATALOGUE_EDITOR role"` as plain props computed by `FlowsTableContainer`.
+- Optimistic edit (cache `onMutate` + rollback; `problem+json` → field errors): `createQueryRowMutationAdapter` (`packages/adapters/src/row-mutation.adapter.ts`) implements the **TanStack Query cache `onMutate` + snapshot rollback** pattern rather than variables-only UI state. In `onMutate`, it snapshots and optimistically updates every matching `SpringPageEnvelope<TRow>` list query (`queryKeyPrefix: ['flows', collabId]`) **and** the mirrored single-row detail cache entry (`detailQueryKey: (id) => ['flow-detail', collabId, id]`), cancelling in-flight queries. In `onError`, it restores both list and detail caches from the snapshot and extracts RFC 7807 `application/problem+json` (422) `errors{}` via `extractProblemDetail` / `formatProblemDetailMessage`, mapping field errors (e.g. `avgLatencyMs: must be ≥ 1`) back onto both the adapter's `getFieldErrors(rowId)` / `errorsById[rowId]` and the L1 edit-mode state machine's `error` transition.
+- **Did any port interface have to change when wired to the real stack?** (the key finding): **No (`0` changes).** `git diff main -- packages/ports packages/ui-core` is completely empty. Neither `@platform/ports` nor `@platform/ui` (`Button` or `DataTable`) required a single line of modification when transitioning from Stage-2 in-memory adapters to Stage-3 real TanStack Query + TanStack Router + Session + Zustand adapters.
 
 ---
 
@@ -71,9 +71,16 @@ _Copy this to `docs/EVIDENCE.md` in the spike repo. The agent fills it **as it g
 
 _The spike is built on TanStack Start (paper leader). The headless core + ports + presentation are framework-agnostic; only `@platform/adapters` router wiring is Start-shaped. Record concretely what would change if the Phase 1 stack gate picks Next instead._
 
-- `NavigationPort` adapter (Start `navigate` + typed `search` → Next `useRouter`/`useSearchParams`): ___
-- Anything else that touched the framework (loaders/prefetch, route-level auth guard): ___
-- Did any **brick** code depend on Start? (should be none — if yes, that's a leak) ___
+- **`NavigationPort` adapter (`packages/adapters/src/navigation.adapter.ts` & route caller `src/routes/collaborations/$id.flows.tsx`)**:
+  - `createRouterNavigationAdapter` itself is already callback-bridged (`onNavigate({ to, replace, search })` + `resolveHref(to)`), so only the route-level wiring in `FlowsTabRoute` and `src/components/AppLink.tsx` changes:
+    - **TanStack Start (`src/routes/collaborations/$id.flows.tsx`)**: reads `const search = Route.useSearch()` (validated via `validateSearch: parseFlowsSearch`) and writes via `Route.useNavigate()` (`navigate({ search: () => cleanFlowsSearch(nextSearch), replace: true })`).
+    - **Next.js App Router equivalent (`app/collaborations/[id]/flows/page.tsx`)**: reads `const search = parseFlowsSearch(useSearchParams())` (already supported by `parseFlowsSearch` in `src/shared/src/flows/schema.ts`, which accepts `URLSearchParams` / `ReadonlyURLSearchParams`) and writes via `useRouter().replace(`${pathname}?${serializeFlowsSearch(nextSearch)}`, { scroll: false })`.
+    - **`AppLink` (`src/components/AppLink.tsx`)**: swaps TanStack Router `<Link>` / anchor binding for `next/link` while keeping `<Button render={<AppLink to="..." />}>` identical at every call site.
+- **Anything else that touched the framework (loaders/prefetch, route-level auth guard)**:
+  - **Client auth guard**: moves from TanStack Router `beforeLoad` (`src/routes/collaborations/$id.tsx`) to a Next.js client layout guard (`app/collaborations/[id]/layout.tsx`) calling the exact same `auth.ensureSession()` (`queryClient.ensureQueryData(sessionQueryOptions(token))`) and redirecting to `/login?return=<path>` on 401.
+  - **Data loading & adjacent-page prefetch**: `createQueryRowSourceAdapter`, `createQueryRowMutationAdapter`, `createSessionPermissionAdapter`, `createZustandViewStateAdapter`, `FlowsTableContainer`, and `prefetchAdjacentFlowsPages` depend only on `@tanstack/react-query`, `zustand`, and `zod` — **zero lines change** for Next.js.
+- **Did any brick code depend on Start? (should be none — if yes, that's a leak)**:
+  - **None (`0` files).** `@platform/tokens`, `@platform/ports`, and `@platform/ui` (`Button` + `DataTable`) have zero imports from `@tanstack/react-router` or `@tanstack/react-start`. They are 100% portable to Next.js without modification.
 
 ---
 
@@ -84,14 +91,15 @@ _The spike is built on TanStack Start (paper leader). The headless core + ports 
 | Stage 0 | `@tanstack/react-virtual` pinned at `3.14.24` | Matches existing bake-off pin in `package.json` & `src/shared/package.json` (`3.17.x` does not exist on npm; latest is `3.14.26`). | Kept exact `3.14.24` pin to match existing workspace lockfile and `src/shared` peer dependency. |
 | Stage 0 | `typescript-eslint@8.72.1` hard-blocks `typescript@7.0.2` | `typescript-eslint` throws `typescript-eslint does not support TS 7.0` at import time. | Used `@babel/parser` in ESTree mode (`plugins: ["typescript", "jsx", "estree"]`, bundled with `babel-plugin-react-compiler@1.0.0`) inside `eslint.config.mjs`, which natively parses TS 7.0 + JSX and powers both `eslint-plugin-react-compiler` and `platform-arch/*` rules. |
 | Stage 2 | `@tanstack/react-virtual` `observeElementRect` in `jsdom` | In `jsdom`, `getBoundingClientRect()` returns `0x0`, causing `useVirtualizer`'s default `observeElementRect` initial callback to overwrite `initialRect` with `height: 0`. | Wrapped `observeElementRect` in `datatable.behavior.ts` to fall back to `initialViewportHeight` when `rect.height === 0`, preserving windowing in both headless tests and real browsers. |
+| Stage 2 / 3 | `eslint-plugin-react-compiler` on context-returned port hook methods | Calling `port.useRows(query)` directly on an object returned from `useContext` trips `react-compiler/react-compiler` (`Hooks must be the same function on every render`). | Provided top-level wrapper hooks (`useRowSource`, `useOptionalRowMutation`, `useNavigationHref`) in `datatable.ports.ts` using `Reflect.apply(port.useRows, port, [query])`, satisfying both React Compiler and Biome `useHookAtTopLevel`. |
 
 ---
 
 ## §6 — Gate artifact checklist (Stage 3 close)
 
-- [ ] Two reference components (Button Tier 1 · DataTable Tier 4) on one template
-- [ ] `PATTERNS.md` others can copy (folder template · tier/capability matrix · how to add a port · render/useRender recipe · "empty layers are allowed")
-- [ ] The four proofs in §2 all ☑
-- [ ] §4 portability note written
-- [ ] `mise run verify` (lint + typecheck + test) green
-- [ ] **Register update is CONTINGENT** — "Component primitive layer = Base UI" and "Component/adapter contract" stay pending in `locked-decisions.md` until the Phase 1 stack gate closes
+- [x] Two reference components (Button Tier 1 · DataTable Tier 4) on one template
+- [x] `PATTERNS.md` others can copy (folder template · tier/capability matrix · how to add a port · render/useRender recipe · "empty layers are allowed")
+- [x] The four proofs in §2 all ☑
+- [x] §4 portability note written
+- [x] `mise run verify` (lint + typecheck + test) green
+- [x] **Register update is CONTINGENT** — "Component primitive layer = Base UI" and "Component/adapter contract" stay pending in `locked-decisions.md` until the Phase 1 stack gate closes
