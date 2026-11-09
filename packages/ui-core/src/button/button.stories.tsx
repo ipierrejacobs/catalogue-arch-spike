@@ -122,13 +122,13 @@ export function RenderAsLinkStory({
 				render={(props, state) => (
 					<LinkComponent
 						{...props}
-						to="/collaborations/collab-1/flows"
+						to="/items/item-1"
 						data-rendered-variant={state.variant}
 					/>
 				)}
 				data-testid="btn-render-fn-link"
 			>
-				Inspect Flows
+				Inspect Items
 			</Button>
 			<Button
 				variant="ghost"

@@ -68,7 +68,7 @@ describe("Stage 1 — Button (Tier 1, Negative Proof)", () => {
 
 		const { rerender } = render(
 			<Button ref={buttonRef} onClick={onClick} data-testid="plain-btn">
-				Save Collaboration
+				Save Item
 			</Button>,
 		);
 
@@ -85,7 +85,7 @@ describe("Stage 1 — Button (Tier 1, Negative Proof)", () => {
 		// Disabled via prop (computed by caller, not read from session)
 		rerender(
 			<Button disabled onClick={onClick} data-testid="plain-btn">
-				Save Collaboration
+				Save Item
 			</Button>,
 		);
 		expect(btn.hasAttribute("disabled")).toBe(true);
@@ -101,7 +101,7 @@ describe("Stage 1 — Button (Tier 1, Negative Proof)", () => {
 				onClick={onClick}
 				data-testid="plain-btn"
 			>
-				Save Collaboration
+				Save Item
 			</Button>,
 		);
 		expect(btn.getAttribute("aria-disabled")).toBe("true");
@@ -146,12 +146,12 @@ describe("Stage 1 — Button (Tier 1, Negative Proof)", () => {
 
 		const fnLink = screen.getByTestId("btn-render-fn-link");
 		expect(fnLink.tagName).toBe("A");
-		expect(fnLink.getAttribute("href")).toBe("/collaborations/collab-1/flows");
+		expect(fnLink.getAttribute("href")).toBe("/items/item-1");
 		expect(fnLink.getAttribute("data-rendered-variant")).toBe("soft");
 
 		fireEvent.click(fnLink);
 		expect(onNavigate).toHaveBeenCalledWith(
-			"/collaborations/collab-1/flows",
+			"/items/item-1",
 			expect.any(Object),
 		);
 
