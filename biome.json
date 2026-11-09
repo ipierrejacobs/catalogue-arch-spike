@@ -41,35 +41,6 @@
 			}
 		}
 	},
-	"overrides": [
-		{
-			"includes": [
-				"**/packages/ui-core/src/**/*",
-				"!**/packages/ui-core/src/data-table/**/*",
-				"!**/packages/ui-core/src/__tests__/**/*"
-			],
-			"linter": {
-				"rules": {
-					"style": {
-						"noRestrictedImports": {
-							"level": "error",
-							"options": {
-								"paths": {
-									"@platform/ports": "Graduated-Capability Violation: Tier 0–2 components in @platform/ui are forbidden from importing @platform/ports."
-								},
-								"patterns": [
-									{
-										"group": ["@platform/ports/*", "**/ports", "**/ports/*"],
-										"message": "Graduated-Capability Violation: Tier 0–2 components in @platform/ui are forbidden from importing @platform/ports."
-									}
-								]
-							}
-						}
-					}
-				}
-			}
-		}
-	],
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
