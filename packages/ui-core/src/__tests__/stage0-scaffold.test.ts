@@ -102,13 +102,31 @@ describe("Stage 0 — Four-layer workspace scaffold, token tiers, and lint guard
 		);
 		expect(cleanLeafResult.errorCount).toBe(0);
 
-		// 4. Tier 4 Macro Brick (data-table) importing @platform/ports MUST PASS
+		// 4. (a) A Tier-1-tagged file placed UNDER the datatable folder MUST STILL FAIL — location cannot launder tier
+		const [launderedTier1InDataTableResult] = await eslint.lintText(
+			'// @tier 1\nimport { PORTS_MINIMUM_TIER } from "@platform/ports";\nexport const laundered = PORTS_MINIMUM_TIER;\n',
+			{
+				filePath: resolve(
+					process.cwd(),
+					"packages/ui-core/src/datatable/sneaky-tier1-leaf.tsx",
+				),
+			},
+		);
+		expect(launderedTier1InDataTableResult.errorCount).toBeGreaterThan(0);
+		expect(launderedTier1InDataTableResult.messages[0]?.ruleId).toBe(
+			"platform-arch/no-ports-in-leaf-tiers",
+		);
+		expect(launderedTier1InDataTableResult.messages[0]?.message).toContain(
+			"Graduated-Capability Violation",
+		);
+
+		// 5. (b) Real Tier-4 DataTable importing @platform/ports MUST PASS
 		const [tier4Result] = await eslint.lintText(
 			'import { PORTS_MINIMUM_TIER } from "@platform/ports";\nexport const allowed = PORTS_MINIMUM_TIER;\n',
 			{
 				filePath: resolve(
 					process.cwd(),
-					"packages/ui-core/src/data-table/data-table.ports.ts",
+					"packages/ui-core/src/datatable/datatable.ports.ts",
 				),
 			},
 		);
